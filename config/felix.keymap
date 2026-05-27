@@ -18,7 +18,16 @@
 However, 'LANG1' and 'LANG2' are fully-functioning candidates for 'kana' and 'eisuu' input respectively.
 As such, those are in use within the default layer at this time.*/
 
+// Uncomment the following line to compile the 4-row layout (Felix Mini)
+// #define LAYOUT_4ROW
+
 / {
+#ifdef LAYOUT_4ROW
+    chosen {
+        zmk,physical-layout = &felix_mini_layout;
+    };
+#endif
+
     behaviors {
         tpmt: tpmt {
             compatible = "zmk,behavior-hold-tap";
@@ -36,6 +45,51 @@ As such, those are in use within the default layer at this time.*/
     keymap {
         compatible = "zmk,keymap";
 
+#ifdef LAYOUT_4ROW
+        default_layer {
+            bindings = <
+&kp TAB        &kp Q          &kp W             &kp E             &kp R           &kp T                                         &kp Y      &kp U                &kp I         &kp O              &kp P                     &kp BACKSPACE
+&kp BACKSPACE  &tpmt LCTRL A  &tpmt LEFT_ALT S  &tpmt LEFT_GUI D  &tpmt LSHIFT F  &kp G                                         &kp H      &tpmt RIGHT_SHIFT J  &tpmt RGUI K  &tpmt RIGHT_ALT L  &tpmt RIGHT_CONTROL SEMI  &kp SQT
+&kp LSHFT      &kp Z          &kp X             &kp C             &kp V           &kp B                                         &kp N      &kp M                &kp COMMA     &kp PERIOD         &kp SLASH                 &kp RSHFT
+&kp LCTRL      &kp LEFT_META  &kp LALT          &kp SPACE         &kp ENTER       &kp DELETE  &kp PAGE_UP        &kp PAGE_DOWN  &kp SPACE  &kp DEL              &kp LEFT      &kp DOWN           &kp UP                    &kp RIGHT
+            >;
+
+            label = "DEFAULT";
+        };
+
+        lower_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans        &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+
+            label = "NAV";
+        };
+
+        raise_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans        &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+
+            label = "NUM";
+        };
+
+        adjust_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                        &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans        &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+
+            label = "SYS";
+        };
+#else
         default_layer {
             // ---------------------------------------------------------------------------------------------------------------------------------
             // | GRAVE  |   1    |   2    |   3    |   4    |   5    |                                      |   6    |   7    |   8    |   9    |   0    |  DEL   |
@@ -111,6 +165,7 @@ As such, those are in use within the default layer at this time.*/
 
             label = "SYS";
         };
+#endif
 
         extra1 { status = "reserved"; };
 
