@@ -5,6 +5,7 @@
 #   * 加上 DYA Studio 需要的模块（连接管理 / 电池 / 设置 RPC / 运行时宏·组合键 / 诊断 …）
 # 只去掉了 Dash 那块硬件专用的东西（轨迹球驱动、半双工 UART 版 Zephyr、LED 动画），
 # 因此 Zephyr 走 fork 自带 app/west.yml 里的 v4.1.0+zmk-fixes。
+# 显示走 ZMK 官方（板载 i2c OLED + 内置状态屏），不再依赖第三方显示模块。
 #
 # 注意：这是 cormoran 的实验性 fork，官方明确说明对非 DYA 键盘属“自担风险”。
 manifest:
@@ -15,8 +16,6 @@ manifest:
   remotes:
     - name: cormoran
       url-base: https://github.com/cormoran
-    - name: mctechnology17
-      url-base: https://github.com/mctechnology17
   projects:
     - name: zmk
       remote: cormoran
@@ -48,11 +47,6 @@ manifest:
     - name: zmk-feature-default-layer
       revision: codex/custom-rpc-rewrite
     - name: zmk-module-devtool
-
-    # --- Felix 自己的显示模块（nice_oled / nice_epaper）---
-    - name: zmk-nice-oled
-      remote: mctechnology17
-      revision: main
 
   self:
     path: config

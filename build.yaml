@@ -1,70 +1,63 @@
 # This file generates the GitHub Actions matrix.
-# For simple board + shield combinations, add them to the top level board and
-# shield arrays, for more control, add individual board + shield combinations
-# to the `include` property. You can also use the `cmake-args` property to
-# pass flags to the build command, `snippet` to add a Zephyr snippet, and
-# `artifact-name` to assign a name to distinguish build outputs from each other:
 #
-# board: [ "nice_nano//zmk" ]
-# shield: [ "corne_left", "corne_right" ]
-# include:
-#   - board: bdn9_rev2
-#   - board: nice_nano//zmk
-#     shield: reviung41
-#   - board: nice_nano//zmk
-#     shield: corne_left
-#     snippet: studio-rpc-usb-uart
-#     cmake-args: -DCONFIG_ZMK_STUDIO=y
-#     artifact-name: corne_left_with_studio
+# 显示全部走 ZMK 官方支持，不用第三方显示模块（原来的 zmk-nice-oled 与
+# ZMK main / Zephyr 4.1 的 LVGL 不兼容，已从 config/west.yml 移除）：
+#   1) 板载 i2c OLED：定义在 boards/shields/felix/felix.dtsi，shield 不用加东西
+#   2) nice!view 电子纸：官方 shield nice_view_adapter + nice_view
+# 状态屏用 ZMK 内置的（CONFIG_ZMK_DISPLAY_STATUS_SCREEN_BUILT_IN）。
 #
-# The Felix (5-row) and Felix Mini (4-row) variants share one config directory
-# and one keymap file. The 4-row variant is selected with the LAYOUT_4ROW
-# devicetree preprocessor define, which flips the `#ifdef LAYOUT_4ROW` branches
-# in config/felix.keymap (chosen physical layout + keymap). Passing it through
-# cmake-args means both variants are built by every CI run.
+# 这块板子基于 cormoran 的 ZMK fork（DYA Studio 支持，见 config/west.yml），
+# 即 ZMK main / Zephyr 4.1，板子名必须带 variant/revision：
+#   nice_nano_v2  ->  nice_nano@2.0.0//zmk  (短写: nice_nano//zmk)
 #
-# This branch builds against cormoran's ZMK fork (DYA Studio support), i.e.
-# ZMK main / Zephyr 4.1, so the board must carry the `zmk` variant + revision:
-#   nice_nano_v2  ->  nice_nano@2.0.0//zmk  (short: nice_nano//zmk)
-# See config/west.yml and the notes in config/felix.conf.
+# Felix (5-row) 与 Felix Mini (4-row) 共用同一份 config 和 keymap 文件；
+# 4 行版靠 devicetree 预处理宏 LAYOUT_4ROW 选中 config/felix.keymap 里的
+# `#ifdef LAYOUT_4ROW` 分支（chosen 物理布局 + 4 行 keymap），
+# 所以两种变体每次 CI 都会一起编出来。
 #
 ---
 include:
-  # ------------------------------------------------------------------ Felix (5-row)
+  # ------------------------------------------- Felix (5-row) · 板载 i2c OLED
   - board: nice_nano//zmk
-    shield: felix_left nice_oled
+    shield: felix_left
     snippet: studio-rpc-usb-uart
-    artifact-name: felix-5row-left-oled
+    artifact-name: felix-5row-left
   - board: nice_nano//zmk
-    shield: felix_right nice_oled
-    artifact-name: felix-5row-right-oled
+    shield: felix_right
+    artifact-name: felix-5row-right
+
+  # ------------------------------------------- Felix (5-row) · nice!view 电子纸
   - board: nice_nano//zmk
-    shield: felix_left nice_view_adapter nice_epaper
+    shield: felix_left nice_view_adapter nice_view
     snippet: studio-rpc-usb-uart
-    artifact-name: felix-5row-left-epaper
+    artifact-name: felix-5row-left-view
   - board: nice_nano//zmk
-    shield: felix_right nice_view_adapter nice_epaper
-    artifact-name: felix-5row-right-epaper
+    shield: felix_right nice_view_adapter nice_view
+    artifact-name: felix-5row-right-view
+
+  # ------------------------------------------ Felix Mini (4-row) · 板载 i2c OLED
+  - board: nice_nano//zmk
+    shield: felix_left
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
+    artifact-name: felix-mini-left
+  - board: nice_nano//zmk
+    shield: felix_right
+    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
+    artifact-name: felix-mini-right
+
+  # ------------------------------------------ Felix Mini (4-row) · nice!view 电子纸
+  - board: nice_nano//zmk
+    shield: felix_left nice_view_adapter nice_view
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
+    artifact-name: felix-mini-left-view
+  - board: nice_nano//zmk
+    shield: felix_right nice_view_adapter nice_view
+    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
+    artifact-name: felix-mini-right-view
+
+  # ---------------------------------------------------------------- 工具固件
   - board: nice_nano//zmk
     shield: settings_reset
     artifact-name: settings_reset
-
-  # ------------------------------------------------------------- Felix Mini (4-row)
-  - board: nice_nano//zmk
-    shield: felix_left nice_oled
-    snippet: studio-rpc-usb-uart
-    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
-    artifact-name: felix-mini-left-oled
-  - board: nice_nano//zmk
-    shield: felix_right nice_oled
-    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
-    artifact-name: felix-mini-right-oled
-  - board: nice_nano//zmk
-    shield: felix_left nice_view_adapter nice_epaper
-    snippet: studio-rpc-usb-uart
-    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
-    artifact-name: felix-mini-left-epaper
-  - board: nice_nano//zmk
-    shield: felix_right nice_view_adapter nice_epaper
-    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
-    artifact-name: felix-mini-right-epaper
