@@ -5,13 +5,13 @@
 # pass flags to the build command, `snippet` to add a Zephyr snippet, and
 # `artifact-name` to assign a name to distinguish build outputs from each other:
 #
-# board: [ "nice_nano_v2" ]
+# board: [ "nice_nano//zmk" ]
 # shield: [ "corne_left", "corne_right" ]
 # include:
 #   - board: bdn9_rev2
-#   - board: nice_nano_v2
+#   - board: nice_nano//zmk
 #     shield: reviung41
-#   - board: nice_nano_v2
+#   - board: nice_nano//zmk
 #     shield: corne_left
 #     snippet: studio-rpc-usb-uart
 #     cmake-args: -DCONFIG_ZMK_STUDIO=y
@@ -23,43 +23,48 @@
 # in config/felix.keymap (chosen physical layout + keymap). Passing it through
 # cmake-args means both variants are built by every CI run.
 #
+# This branch builds against cormoran's ZMK fork (DYA Studio support), i.e.
+# ZMK main / Zephyr 4.1, so the board must carry the `zmk` variant + revision:
+#   nice_nano_v2  ->  nice_nano@2.0.0//zmk  (short: nice_nano//zmk)
+# See config/west.yml and the notes in config/felix.conf.
+#
 ---
 include:
   # ------------------------------------------------------------------ Felix (5-row)
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_left nice_oled
     snippet: studio-rpc-usb-uart
     artifact-name: felix-5row-left-oled
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_right nice_oled
     artifact-name: felix-5row-right-oled
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_left nice_view_adapter nice_epaper
     snippet: studio-rpc-usb-uart
     artifact-name: felix-5row-left-epaper
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_right nice_view_adapter nice_epaper
     artifact-name: felix-5row-right-epaper
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: settings_reset
     artifact-name: settings_reset
 
   # ------------------------------------------------------------- Felix Mini (4-row)
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_left nice_oled
     snippet: studio-rpc-usb-uart
     cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
     artifact-name: felix-mini-left-oled
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_right nice_oled
     cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
     artifact-name: felix-mini-right-oled
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_left nice_view_adapter nice_epaper
     snippet: studio-rpc-usb-uart
     cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
     artifact-name: felix-mini-left-epaper
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: felix_right nice_view_adapter nice_epaper
     cmake-args: -DDTS_EXTRA_CPPFLAGS=-DLAYOUT_4ROW
     artifact-name: felix-mini-right-epaper

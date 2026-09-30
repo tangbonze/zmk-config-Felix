@@ -3,4 +3,11 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.2
+    # 固件基于 cormoran 的 ZMK fork（DYA Studio 支持，见 config/west.yml），
+    # 因此复用该 fork 的构建工作流，而不是 zmkfirmware/zmk 的。
+    #
+    # 这里用 commit SHA 固定 = 分支 main+dya（末次同步 2026-07-25）；
+    # 之所以不用 @main+dya，是因为分支名里的 “+” 放在 uses: 的 ref 里容易踩坑。
+    # 想升级时：git ls-remote https://github.com/cormoran/zmk main+dya 取新的 SHA 换掉即可；
+    # 若确认 @main+dya 可用，也可以直接写成 @main+dya。
+    uses: cormoran/zmk/.github/workflows/build-user-config.yml@e5c9b6915b56801193e359dd9bad4a167ce0d1b8

@@ -1,16 +1,58 @@
+# DYA Studio 版 manifest
+#
+# 与官方 cormoran/zmk-keyboard-dya-dash 的 config/west-dependency.yml 保持同一套依赖：
+#   * ZMK 换成 cormoran 的 fork（main+dya，基于 ZMK main / Zephyr 4.1，带 custom studio protocol）
+#   * 加上 DYA Studio 需要的模块（连接管理 / 电池 / 设置 RPC / 运行时宏·组合键 / 诊断 …）
+# 只去掉了 Dash 那块硬件专用的东西（轨迹球驱动、半双工 UART 版 Zephyr、LED 动画），
+# 因此 Zephyr 走 fork 自带 app/west.yml 里的 v4.1.0+zmk-fixes。
+#
+# 注意：这是 cormoran 的实验性 fork，官方明确说明对非 DYA 键盘属“自担风险”。
 manifest:
+  version: 1.2
+  defaults:
+    remote: cormoran
+    revision: main
   remotes:
-    - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
+    - name: cormoran
+      url-base: https://github.com/cormoran
     - name: mctechnology17
       url-base: https://github.com/mctechnology17
   projects:
     - name: zmk
-      remote: zmkfirmware
-      revision: v0.2
+      remote: cormoran
+      revision: main+dya
       import: app/west.yml
+      clone-depth: 1
+
+    # west 扩展命令（make init-standalone / west zmk-build 等），官方也带
+    - name: zmk-west-commands
+      import: true
+
+    # --- DYA Studio 功能模块 ---
+    - name: zmk-module-ble-management          # 连接（蓝牙 profile）管理
+    - name: zmk-module-battery-history         # 电池历史（Kconfig 里默认关闭，见 felix.conf）
+    - name: zmk-module-settings-rpc            # 设备设置读写
+    - name: zmk-module-runtime-input-processor # 运行时输入处理器（Felix 无轨迹球，留着不影响）
+    - name: zmk-feature-custom-settings
+    - name: zmk-feature-zephyr-setting-expose  # 高级固件设置面板
+    - name: zmk-feature-device-info            # 固件信息 / uptime
+    - name: zmk-feature-kscan-diagnostics      # 按键抖动诊断
+    - name: zmk-feature-runtime-combo          # 运行时组合键编辑
+    - name: zmk-feature-runtime-macro          # 运行时宏编辑
+    - name: zmk-feature-input-stream
+    - name: zmk-feature-module-physical-layout # 物理布局 RPC（Felix / Felix Mini）
+    - name: zmk-feature-fast-keymap
+    - name: zmk-feature-watchdog
+    - name: zmk-feature-studio-rpc-perf
+    - name: zmk-feature-os-detection
+    - name: zmk-feature-default-layer
+      revision: codex/custom-rpc-rewrite
+    - name: zmk-module-devtool
+
+    # --- Felix 自己的显示模块（nice_oled / nice_epaper）---
     - name: zmk-nice-oled
       remote: mctechnology17
       revision: main
+
   self:
     path: config
